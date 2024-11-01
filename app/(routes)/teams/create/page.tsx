@@ -1,5 +1,5 @@
 const Create = () => {
-  return <div>Create team</div>;
+  return <div>you can Create a new team here</div>;
 };
 
 export default Create;

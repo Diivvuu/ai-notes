@@ -1,5 +1,6 @@
 "use client";
-import { useCreateUser } from "@/app/hooks/create-user";
+import { useCreateUser } from "@/app/hooks/use-create-user";
+import { useCreateTeamModal } from "@/app/store/use-create-team";
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -8,11 +9,14 @@ import {
   useKindeBrowserClient,
 } from "@kinde-oss/kinde-auth-nextjs";
 import { useConvex, useMutation, useQuery } from "convex/react";
+import { Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const Dashboard = () => {
   const convex = useConvex();
+  const [open, setOpen] = useCreateTeamModal();
   const [newUserId, setNewUserId] = useState<Id<"users"> | null>(null);
   const { user }: any = useKindeBrowserClient();
   const { mutate, isPending } = useCreateUser();
@@ -30,6 +34,7 @@ const Dashboard = () => {
         {
           onSuccess(data) {
             setNewUserId(data);
+            setOpen(true);
           },
           onError(error) {
             toast.error(
@@ -38,12 +43,6 @@ const Dashboard = () => {
           },
         }
       );
-      // createUser({
-      //   name: user.given_name,
-      //   email: user.email,
-      //   image: user.picture,
-      //   plan: "free",
-      // }).then((resp) => console.log(resp));
     }
     console.log(user);
   }, [user]);
@@ -71,14 +70,17 @@ const Dashboard = () => {
   // };
 
   return (
-    <div>
-      <div>hi i am dashboard</div>
+    <>
+      {isPending && <Loader className="animate-spin size-4" />}
       <div>
-        <LogoutLink>
-          <Button>Logout</Button>
-        </LogoutLink>
+        <div>hi i am dashboard</div>
+        <div>
+          <LogoutLink>
+            <Button>Logout</Button>
+          </LogoutLink>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

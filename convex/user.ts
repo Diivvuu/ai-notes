@@ -8,23 +8,15 @@ export const getUser = query({
     email: v.string(),
   },
   handler: async (ctx, args) => {
-    try {
-      console.log("Fetching user with email:", args.email); // Log email
-      const result = await ctx.db
-        .query("users")
-        .filter((q) => q.eq(q.field("email"), args.email))
-        .first();
+    const result = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("email"), args.email))
+      .first();
 
-      if (!result) {
-        console.log("user not found");
-        return null;
-      }
-
-      return result;
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      throw new Error("Failed to fetch user");
+    if (!result) {
+      return null;
     }
+    return result._id;
   },
 });
 
@@ -52,8 +44,6 @@ export const createUser = mutation({
       // Create new user object
       const newUser = {
         ...args,
-        createdAt: Date.now(), // Use Date.now() for timestamps
-        updatedAt: Date.now(),
       };
 
       // Insert new user into the database

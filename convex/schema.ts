@@ -8,8 +8,6 @@ const schema = defineSchema({
     email: v.string(),
     image: v.optional(v.string()), // Optional field if image is not mandatory
     plan: v.union(v.literal("free"), v.literal("paid")), // Plan type
-    createdAt: v.number(),
-    updatedAt: v.number(),
   }),
 
   // Teams Table: Each team has a unique owner (admin).
@@ -17,8 +15,6 @@ const schema = defineSchema({
     name: v.string(),
     ownerId: v.id("users"), // The main admin of the team
     joinCode: v.string(), // Code to invite/join the team
-    createdAt: v.number(),
-    updatedAt: v.number(),
   }).index("by_owner_id", ["ownerId"]), // Index for efficient owner lookup
 
   // Members Table: Links users to teams, with roles (admin/member).
