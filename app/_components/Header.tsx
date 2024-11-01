@@ -2,8 +2,8 @@ import Image from "next/image";
 import Logo from "@/app/assets/Logo.svg";
 import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs";
 import { useEffect, useState } from "react";
-import { Button } from "../ui/button";
 import { Moon, Sun } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const Header = () => {
   const [darkMode, setDarkMode] = useState(false);
