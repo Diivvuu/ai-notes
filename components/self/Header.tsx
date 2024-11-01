@@ -30,7 +30,7 @@ export const Header = () => {
   };
   return (
     <header className="border-b border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-gray-900">
-      <div className="mx-auto max-w-screen-2xl px-4 py-8 sm:px-6 sm:py-6 lg:px-8">
+      <div className="relative mx-auto max-w-screen-2xl px-4 py-8 sm:px-6 sm:py-6 lg:px-8">
         <div className="flex flex-col items-start  md:flex-row md:items-center md:justify-between">
           {/* <div> */}
           <div className="flex items-center justify-between md:justify-normal md:gap-x-8 w-full">
@@ -67,14 +67,14 @@ export const Header = () => {
             </RegisterLink>
           </div>
         </div>
-        <div className="absolute right-5 top-5" onClick={toggleDarkMode}>
+        <div className="absolute right-7 top-3" onClick={toggleDarkMode}>
           {darkMode ? (
             <div className="border-2 border-white rounded-full p-1">
               <Sun className="text-white size-5" />
             </div>
           ) : (
             <div className=" border-2 border-black rounded-full p-1">
-              <Moon className="size-5" />
+              <Moon className="size-4 md:size-5" />
             </div>
           )}
         </div>
