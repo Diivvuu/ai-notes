@@ -4,14 +4,9 @@ import { Hero } from "@/app/_components/Hero";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [clientRendered, setClientRendered] = useState(false);
-
-  useEffect(() => {
-    setClientRendered(true);
-  }, []);
   return (
     <div className="">
-      {clientRendered && <Header />}
+      <Header />
       <Hero />
     </div>
   );

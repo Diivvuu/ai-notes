@@ -24,6 +24,7 @@ const CreateTeamModal = ({ user }: CreateTeamModalProps) => {
   const { mutate, isPending } = useCreateTeam();
   const handleClose = () => {
     setOpen(false);
+    setTeamName("");
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

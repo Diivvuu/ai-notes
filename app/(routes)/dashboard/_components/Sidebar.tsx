@@ -1,5 +1,5 @@
 import { useCreateTeamModal } from "@/app/store/use-create-team";
-import { Team } from "@/app/types";
+import { Team, User } from "@/app/types";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +20,7 @@ import {
 import { api } from "@/convex/_generated/api";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { useConvex } from "convex/react";
-import { ChevronDown, Plus } from "lucide-react";
+import { AlertTriangleIcon, ChevronDown, Plus } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
 interface AppSidebarProps {
@@ -88,7 +88,7 @@ function AppSidebar() {
         </SidebarMenu>
         <SidebarGroupContent>
           <SidebarMenu>
-            {teams &&
+            {teams ? (
               teams.map((team, index) => {
                 return (
                   <SidebarMenuItem
@@ -98,7 +98,15 @@ function AppSidebar() {
                     {team.name}
                   </SidebarMenuItem>
                 );
-              })}
+              })
+            ) : (
+              <div>
+                <div>
+                  <AlertTriangleIcon />
+                </div>
+                <div>Currently you don't have any teams!</div>
+              </div>
+            )}
           </SidebarMenu>
         </SidebarGroupContent>
       </SidebarContent>

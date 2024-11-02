@@ -12,12 +12,13 @@ import {
 import { useConvex, useMutation, useQuery } from "convex/react";
 import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Team } from "@/app/types";
 
 const Dashboard = () => {
   const convex = useConvex();
+  const router = useRouter();
   const [open, setOpen] = useCreateTeamModal();
   const [newUserId, setNewUserId] = useState<Id<"users"> | null>(null);
   const [teams, setTeams] = useState<Team[] | null>(null);
@@ -30,9 +31,10 @@ const Dashboard = () => {
         id: newUserId,
       });
       setTeams(result);
-      if (!result?.length) {
-        setOpen(true);
-      }
+      console.log(result);
+      // if (result && result.length === 0) {
+      //   setOpen(true);
+      // }
       return result;
     }
   };
@@ -49,7 +51,8 @@ const Dashboard = () => {
         {
           onSuccess(data) {
             setNewUserId(data);
-            getTeams();
+            console.log(newUserId, data);
+            // getTeams();
           },
           onError(error) {
             toast.error(
@@ -61,10 +64,32 @@ const Dashboard = () => {
     }
   }, [user]);
   // checking if user has any team
+  const teamId = useMemo(() => (teams ? teams?.[0]?._id : null), [teams]);
   useEffect(() => {
-    getTeams();
-    console.log(teams);
-  }, [open, setOpen, teams, setTeams]);
+    if (newUserId) getTeams();
+  }, [newUserId]);
+  useEffect(() => {
+    console.log(teamId, "teamid");
+
+    if (teamId) {
+      setOpen(false);
+      router.replace(`/dashboard/team/${teamId}`);
+    } else if (!open) {
+      console.log("i opened");
+      setOpen(true);
+      getTeams();
+    }
+  }, [teamId, teams, setTeams, open, setOpen, newUserId]);
+  // useEffect(() => {
+  //   console.log(newUserId);
+  //   getTeams();
+  //   console.log(teams);
+  //   if (!teams) {
+  //     setOpen(true);
+  //   } else {
+  //   }
+  //   console.log(teams);
+  // }, [newUserId, teams, open, setOpen, teams, setTeams]);
   // const checkUser = async () => {
   //   if (user?.email) {
   //     try {

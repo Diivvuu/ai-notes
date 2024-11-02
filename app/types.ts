@@ -13,6 +13,7 @@ export interface User {
 
 // Team type representing an entry in the teams table
 export interface Team {
+  _id: Id<"teams">;
   name: string;
   ownerId: Id<"users">; // The main admin of the team
   joinCode: string; // Code to invite/join the team
