@@ -15,6 +15,10 @@ const schema = defineSchema({
     name: v.string(),
     ownerId: v.id("users"), // The main admin of the team
     joinCode: v.string(), // Code to invite/join the team
+    currentMemberCount: v.number(), // Track current member count
+    currentFileCount: v.number(), // Track current file count
+    maxMembers: v.union(v.literal(5), v.literal(10)), // Limit for members based on plan
+    maxFiles: v.union(v.literal(5), v.literal(10)), // Limit for files based on plan
   }).index("by_owner_id", ["ownerId"]), // Index for efficient owner lookup
 
   // Members Table: Links users to teams, with roles (admin/member).
@@ -26,7 +30,7 @@ const schema = defineSchema({
   })
     .index("by_user_id", ["userId"])
     .index("by_team_id", ["teamId"])
-    .index("by_team_id_user_id", ["teamId", "userId"]),
+    .index("by_team_id_user_id", ["teamId", "userId"]), // Composite index for user-team pairs
 
   // Files Table: Stores file information for each team, restricted by plan.
   files: defineTable({

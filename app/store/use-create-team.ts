@@ -1,7 +1,7 @@
 import { atom, useAtom } from "jotai";
 
-const createTeamAtom = atom(false);
+const modalState = atom(false);
 
 export const useCreateTeamModal = () => {
-  return useAtom(createTeamAtom);
+  return useAtom(modalState);
 };

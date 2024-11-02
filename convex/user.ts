@@ -16,7 +16,7 @@ export const getUser = query({
     if (!result) {
       return null;
     }
-    return result._id;
+    return result;
   },
 });
 
@@ -29,6 +29,7 @@ export const createUser = mutation({
   },
   handler: async (ctx, args) => {
     try {
+      // if (args.name === null) return null;
       // Query to check for existing user
       const existingUser = await ctx.db
         .query("users")
@@ -38,7 +39,7 @@ export const createUser = mutation({
       // If user already exists, log and return null
       if (existingUser) {
         console.log("User already exists:", existingUser); // Log existing user
-        return null; // Return null for existing user case
+        return existingUser._id as Id<"users">; // Return null for existing user case
       }
 
       // Create new user object

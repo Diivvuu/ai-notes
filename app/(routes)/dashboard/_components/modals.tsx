@@ -1,8 +1,13 @@
 "use client";
 import CreateTeamModal from "@/app/_components/create-team-modal";
 import { useEffect, useState } from "react";
+import { User } from "@/app/types";
 
-export const Modals = () => {
+interface ModalsProps {
+  user: User;
+}
+
+export const Modals = ({ user }: ModalsProps) => {
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
@@ -11,7 +16,7 @@ export const Modals = () => {
   return (
     <>
       {/* <CreateChannelModal /> */}
-      <CreateTeamModal />
+      <CreateTeamModal user={user} />
     </>
   );
 };

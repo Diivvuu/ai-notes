@@ -1,5 +1,6 @@
 "use client";
 import { useCreateUser } from "@/app/hooks/use-create-user";
+import { useCurrentTeams } from "@/app/hooks/use-current-teams";
 import { useCreateTeamModal } from "@/app/store/use-create-team";
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
@@ -13,15 +14,29 @@ import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Team } from "@/app/types";
 
 const Dashboard = () => {
   const convex = useConvex();
   const [open, setOpen] = useCreateTeamModal();
   const [newUserId, setNewUserId] = useState<Id<"users"> | null>(null);
+  const [teams, setTeams] = useState<Team[] | null>(null);
   const { user }: any = useKindeBrowserClient();
   const { mutate, isPending } = useCreateUser();
-  // const getUser = useQuery(api.user.getUser, { email: user?.email });
-  const createUser = useMutation(api.user.createUser);
+
+  const getTeams = async () => {
+    if (newUserId) {
+      const result = await convex.query(api.teams.getTeams, {
+        id: newUserId,
+      });
+      setTeams(result);
+      if (!result?.length) {
+        setOpen(true);
+      }
+      return result;
+    }
+  };
+  //creating a new user or checking existing user
   useEffect(() => {
     if (user) {
       mutate(
@@ -34,7 +49,7 @@ const Dashboard = () => {
         {
           onSuccess(data) {
             setNewUserId(data);
-            setOpen(true);
+            getTeams();
           },
           onError(error) {
             toast.error(
@@ -44,9 +59,12 @@ const Dashboard = () => {
         }
       );
     }
-    console.log(user);
   }, [user]);
-
+  // checking if user has any team
+  useEffect(() => {
+    getTeams();
+    console.log(teams);
+  }, [open, setOpen, teams, setTeams]);
   // const checkUser = async () => {
   //   if (user?.email) {
   //     try {
@@ -74,6 +92,7 @@ const Dashboard = () => {
       {isPending && <Loader className="animate-spin size-4" />}
       <div>
         <div>hi i am dashboard</div>
+        <div></div>
         <div>
           <LogoutLink>
             <Button>Logout</Button>

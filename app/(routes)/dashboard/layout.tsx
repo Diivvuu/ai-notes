@@ -1,58 +1,54 @@
 "use client";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSidebar from "./_components/Sidebar";
-import { useConvex, useQuery } from "convex/react";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { api } from "@/convex/_generated/api";
-import { useCreateTeamModal } from "@/app/store/use-create-team";
 import { JotaiProvider } from "./_components/jotai-provider";
 import { Modals } from "./_components/modals";
 import { useCurrentUser } from "@/app/hooks/use-current-user";
-import { useCurrentTeams } from "@/app/hooks/use-current-teams";
-
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import { useConvex } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useEffect, useState } from "react";
+import { Team, User } from "@/app/types";
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
   const convex = useConvex();
-  const [currUser, setCurrUser] = useState(null);
+  const { user } = useKindeBrowserClient();
 
-  const [open, setOpen] = useCreateTeamModal();
-  const { user }: any = useKindeBrowserClient();
+  const [currUser, setCurrUser] = useState<User | null>(null);
+  const [teams, setTeams] = useState<Team[] | null>(null);
 
-  const { data: currentUser, isLoading: currentUserLoading } = useCurrentUser({
-    email: user?.email,
-  });
-  // const { data: currentTeams, isLoading: currentTeamsLoading } =
-  // useCurrentTeams({ id: currentUser?.id });
-  useEffect(() => {}, [open, setOpen, currentUser]);
-  // useEffect(() => {})
-  console.log(currentUser);
-  // const [fileList, setFileList] = useState();
-  // const checkTeam = async () => {
-  //   const dbUser = await convex.query(api.user.getUser, { email: user.email });
-  //   if (!dbUser) {
-  //     return;
-  //   }
-  //   const result = await convex.query(api.teams.getTeam, { id: dbUser._id });
-  //   // if email of the user does not have any team then we will redirect to create new
-  //   if (!result.length) {
+  const getUserId = async () => {
+    // console.log("calling get user");
+    if (user?.email) {
+      const CurrUser = await convex.query(api.user.getUser, {
+        email: user.email,
+      });
+      setCurrUser(CurrUser);
+      // console.log(currUser, CurrUser, "current user from layout");
+    }
+  };
+  getUserId();
+  // const getTeams = async () => {
+  //   console.log(currUser, "hi");
+  //   if (currUser?._id) {
+  //     const result = await convex.query(api.teams.getTeams, {
+  //       id: currUser._id,
+  //     });
   //     console.log(result);
-  //     setOpen(true);
+  //     setTeams(result);
+  //     return result;
   //   }
   // };
-
   // useEffect(() => {
-  //   user && checkTeam();
-  // }, [user, setOpen, open]);
-
+  // getTeams();
+  // console.log(teams);
+  // }, [currUser?._id]);
   return (
     <JotaiProvider>
       <SidebarProvider>
         <AppSidebar />
         <main>
           <SidebarTrigger />
-          <Modals />
+          {currUser && <Modals user={currUser} />}
           {children}
         </main>
       </SidebarProvider>
