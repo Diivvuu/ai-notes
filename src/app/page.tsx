@@ -1,9 +1,15 @@
-import Image from "next/image";
+"use client";
+
+import { useAuthActions } from "@convex-dev/auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      i am dashboard
-    </div>
-  );
+  const router = useRouter();
+  useEffect(() => {
+    router.replace("/dashboard");
+  }, [router]);
+
+  //add click on the link below if site doesn't redirect you to the dashboard in under 5 seconds
+  return <div className="">Redirecting....</div>;
 }
