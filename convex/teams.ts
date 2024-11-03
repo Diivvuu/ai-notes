@@ -1,5 +1,42 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { query } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
+import { v } from "convex/values";
+
+const generateCode = () => {
+  const code = Array.from(
+    { length: 6 },
+    () => "0123456789abcdefghijklmnopqrstuvxyz"[Math.floor(Math.random() * 36)]
+  ).join("");
+
+  return code;
+};
+
+export const create = mutation({
+  args: {
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("User is not authorized");
+
+    const joinCode = generateCode();
+
+    const teamId = await ctx.db.insert("teams", {
+      name: args.name,
+      userId,
+      joinCode,
+    });
+
+    //user who created the team is the admin
+    await ctx.db.insert("members", {
+      userId,
+      teamId,
+      role: "admin",
+    });
+
+    return teamId;
+  },
+});
 
 export const get = query({
   args: {},
