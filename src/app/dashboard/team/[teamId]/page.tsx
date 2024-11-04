@@ -45,7 +45,27 @@ function Team() {
           </div>
         </div>
       </div>
-      <div className="w-full flex items-center justify-center mt-20"></div>
+      <div className="w-full flex flex-col items-center justify-start mt-20">
+        {files?.map((file, index) => {
+          return (
+            <div
+              key={index}
+              className="bg-gray-100 hover:bg-gray-200 transition-all ease duration-300 m-2 p-4 rounded-md w-full flex justify-between cursor-pointer"
+            >
+              <div>{file?.name}</div>
+              <div>
+                {new Date(file?._creationTime).toLocaleString("en-GB", {
+                  day: "numeric",
+                  month: "numeric",
+                  year: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
