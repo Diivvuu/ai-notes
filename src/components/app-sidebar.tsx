@@ -39,6 +39,7 @@ function AppSidebar() {
   const isFile = pathname.includes("file");
   const [open, setOpen] = useCreateTeamModal();
   const { data, isLoading } = useGetTeams();
+  const teamId = useTeamId();
   return (
     <Sidebar variant="floating">
       <SidebarHeader>
@@ -59,7 +60,7 @@ function AppSidebar() {
             {data?.map((team, index) => {
               return (
                 <div
-                  className="mt-2 bg-gray-100 rounded-md cursor-pointer"
+                  className={`mt-2 bg-gray-100 rounded-md cursor-pointer px-2 py-1 ${teamId === team._id ? "bg-black text-white" : "bg-white"}`}
                   key={index}
                   onClick={() => router.push(`${team._id}`)}
                 >

@@ -1,6 +1,6 @@
 "use client";
 import { useGetTeam } from "@/features/teams/api/use-get-team";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { AlertTriangleIcon, File, Tag } from "lucide-react";
@@ -9,6 +9,7 @@ import { useCreateFileModal } from "@/store/use-create-file-modal";
 import { useTeamId } from "@/hooks/use-team";
 
 function Team() {
+  const router = useRouter();
   const teamId = useTeamId();
   const [open, setOpen] = useCreateFileModal();
 
@@ -51,6 +52,9 @@ function Team() {
             <div
               key={index}
               className="bg-gray-100 hover:bg-gray-200 transition-all ease duration-300 m-2 p-4 rounded-md w-full flex justify-between cursor-pointer"
+              onClick={() =>
+                router.push(`/dashboard/team/${teamId}/file/${file._id}`)
+              }
             >
               <div>{file?.name}</div>
               <div>
