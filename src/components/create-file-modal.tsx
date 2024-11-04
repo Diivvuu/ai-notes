@@ -7,32 +7,34 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useCreateTeamModal } from "../store/use-create-team-modal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 // import { useCreateWorkspace } from "../api/use-create-workspaces";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useCreateTeam } from "@/features/teams/api/use-create-teams";
+import { useCreateFileModal } from "@/store/use-create-file-modal";
+import { useCreateFile } from "@/features/files/api/use-create-file";
+import { useTeamId } from "@/hooks/use-team";
 
-export const CreateTeamModal = () => {
+export const CreateFileModal = () => {
   const router = useRouter();
-  const [open, setOpen] = useCreateTeamModal();
+  const [open, setOpen] = useCreateFileModal();
   const [name, setName] = useState("");
+  const teamId = useTeamId();
 
-  const { mutate, isPending } = useCreateTeam();
+  const { mutate, isPending } = useCreateFile();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     mutate(
       {
         name,
+        teamId,
       },
       {
         onSuccess(Id) {
-          toast.success("Team created!");
-          router.push(`/dashboard/team/${Id}`);
+          toast.success("New file created!");
+          router.push(`${teamId}/file/${Id}`);
           handleClose();
         },
       }
@@ -47,7 +49,7 @@ export const CreateTeamModal = () => {
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add a new team</DialogTitle>
+          <DialogTitle>Add a new File</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
@@ -57,7 +59,7 @@ export const CreateTeamModal = () => {
             required
             autoFocus
             minLength={3}
-            placeholder="Team name e.g. 'UX/UI designers', 'Frontend Developers'"
+            placeholder="File name e.g. 'XYZ producxt', 'Sales Pitch', 'Landing page'"
           />
           <div className="flex justify-end">
             <Button disabled={false}>Create</Button>

@@ -14,7 +14,7 @@ function Dashboard() {
 
   useEffect(() => {
     if (isLoading) return;
-    if (teamId) router.replace(`/team/${teamId}`);
+    if (teamId) router.push(`/dashboard/team/${teamId}`);
     else if (!open) setOpen(true);
     else console.log("open create modal");
   }, [teamId, isLoading, open, setOpen]);

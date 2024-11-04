@@ -11,10 +11,10 @@ export default function RootLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main>
-        <SidebarTrigger />
-        {children}
-      </main>
+      {/* <main> */}
+      <SidebarTrigger />
+      {children}
+      {/* </main> */}
     </SidebarProvider>
   );
 }

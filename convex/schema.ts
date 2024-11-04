@@ -17,6 +17,12 @@ const schema = defineSchema({
     .index("by_user_id", ["userId"])
     .index("by_team_id", ["teamId"])
     .index("by_team_id_user_id", ["teamId", "userId"]),
+  files: defineTable({
+    name: v.string(),
+    teamId: v.id("teams"),
+    whiteboard: v.string(),
+    document: v.string(),
+  }).index("by_team_id", ["teamId"]),
 });
 
 export default schema;

@@ -38,6 +38,27 @@ export const create = mutation({
   },
 });
 
+export const getById = query({
+  args: {
+    id: v.id("teams"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("User is not authorized");
+
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_team_id_user_id", (q) =>
+        q.eq("teamId", args.id).eq("userId", userId)
+      )
+      .unique();
+
+    if (!member) return null;
+
+    return await ctx.db.get(args.id);
+  },
+});
+
 export const get = query({
   args: {},
   handler: async (ctx) => {
