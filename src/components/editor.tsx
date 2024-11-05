@@ -1,91 +1,88 @@
-"use client";
-import React, { useEffect, useRef } from "react";
-import EditorJS from "@editorjs/editorjs";
-// @ts-ignore
-import Header from "@editorjs/header";
-// @ts-ignore
+
+import React, { useEffect, useRef, useState } from "react";
+import EditorJS,from "@editorjs/editorjs";
+import CheckList from "@editorjs/checklist";
+import Code from "@editorjs/code";
+import Delimiter from "@editorjs/delimiter";
+import Embed from "@editorjs/embed";
+import Image from "@editorjs/image";
+import InlineCode from "@editorjs/inline-code";
 import List from "@editorjs/list";
-// @ts-ignore
-import Checklist from "@editorjs/checklist";
-// @ts-ignore
+import Quote from "@editorjs/quote";
+import Table from "@editorjs/table";
+import SimpleImage from "@editorjs/simple-image";
 import Paragraph from "@editorjs/paragraph";
-// @ts-ignore
-import Warning from "@editorjs/warning";
+import Header from "@editorjs/header";
 
-const rawDocument = {
-  time: 1550476186479,
-  blocks: [
-    {
-      data: {
-        text: "Document Name",
-        level: 2,
-      },
-      id: "123",
-      type: "header",
+
+const EDITOR_TOOLS = {
+  code: Code,
+  header: {
+    class: Header,
+    shortcut: "CMD+H",
+    inlineToolbar: true,
+    config: {
+      placeholder: "Enter a Header",
+      levels: [2, 3, 4],
+      defaultLevel: 2,
     },
-    {
-      data: {
-        level: 4,
-      },
-      id: "1234",
-      type: "header",
-    },
-  ],
-  version: "2.8.1",
+  },
+  paragraph: {
+    class: Paragraph,
+    // shortcut: 'CMD+P',
+    inlineToolbar: true,
+  },
+  checklist: CheckList,
+  inlineCode: InlineCode,
+  table: Table,
+  list: { 
+    class: List, 
+    inlineToolbar: true 
+  } ,
+  quote: Quote,
+  delimiter: Delimiter,
 };
-
-function Editor() {
-  const ref = useRef<EditorJS | null>(null);
-
-  const initEditor = () => {
-    const editor = new EditorJS({
-      /**
-       * Id of Element that should contain Editor instance
-       */
-      holder: "editorjs",
-      tools: {
-        header: {
-          class: Header as any, // Type assertion to bypass strict type checking
-          shortcut: "CMD+SHIFT+H",
-          config: {
-            placeholder: "Enter a Header",
-          },
-        },
-        list: {
-          class: List as any,
-          inlineToolbar: true,
-          config: {
-            defaultStyle: "unordered",
-          },
-        },
-        checklist: {
-          class: Checklist as any,
-          inlineToolbar: true,
-        },
-        paragraph: Paragraph as any,
-        warning: Warning as any,
-      },
-      data: rawDocument,
-    });
-    ref.current = editor;
-  };
-
+function Editor({ data, onChange, holder } : {data : string, onChange : () => void, holder : string}) {
+  //add a reference to editor
+  const ref = useRef<EditorJS>();
+  //initialize editorjs
   useEffect(() => {
-    initEditor();
+    //initialize editor if we don't have a reference
+    if (!ref.current) {
+      const editor = new EditorJS({
+        holder: holder,
+        placeholder: "Start writting here..",
+        tools: EDITOR_TOOLS,
+        data,
+        async onChange(api, event) {
+          const content = await api.saver.save();
+          // console.log(content, "sdfb");
+          onChange(content);
+        },
+      });
+      ref.current = editor;
+    }
 
-    // Cleanup editor instance on component unmount
+    //add a return function handle cleanup
     return () => {
-      if (ref.current) {
+      if (ref.current && ref.current.destroy) {
         ref.current.destroy();
-        ref.current = null;
       }
     };
   }, []);
 
   return (
-    <div>
-      <div id="editorjs" className="ml-20"></div>
-    </div>
+    <>
+      <div
+        id={holder}
+        style={{
+          width: "100%",
+          minHeight: 500,
+          borderRadius: " 7px",
+          background: "fff",
+        }}
+      />
+    </>
   );
 }
 
