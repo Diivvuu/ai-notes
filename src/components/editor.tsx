@@ -1,6 +1,5 @@
-
 import React, { useEffect, useRef, useState } from "react";
-import EditorJS,from "@editorjs/editorjs";
+import EditorJS from "@editorjs/editorjs";
 import CheckList from "@editorjs/checklist";
 import Code from "@editorjs/code";
 import Delimiter from "@editorjs/delimiter";
@@ -13,7 +12,6 @@ import Table from "@editorjs/table";
 import SimpleImage from "@editorjs/simple-image";
 import Paragraph from "@editorjs/paragraph";
 import Header from "@editorjs/header";
-
 
 const EDITOR_TOOLS = {
   code: Code,
@@ -35,14 +33,22 @@ const EDITOR_TOOLS = {
   checklist: CheckList,
   inlineCode: InlineCode,
   table: Table,
-  list: { 
-    class: List, 
-    inlineToolbar: true 
-  } ,
+  list: {
+    class: List,
+    inlineToolbar: true,
+  },
   quote: Quote,
   delimiter: Delimiter,
 };
-function Editor({ data, onChange, holder } : {data : string, onChange : () => void, holder : string}) {
+function Editor({
+  data,
+  onChange,
+  holder,
+}: {
+  data: string;
+  onChange: () => void;
+  holder: string;
+}) {
   //add a reference to editor
   const ref = useRef<EditorJS>();
   //initialize editorjs
