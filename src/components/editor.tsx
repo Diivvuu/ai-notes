@@ -33,49 +33,55 @@ const rawDocument = {
   ],
   version: "2.8.1",
 };
+
 function Editor() {
-  const ref = useRef<EditorJS>();
-  //   const updateDocument = useUpdateDocument
+  const ref = useRef<EditorJS | null>(null);
+
   const initEditor = () => {
     const editor = new EditorJS({
       /**
        * Id of Element that should contain Editor instance
        */
-
+      holder: "editorjs",
       tools: {
         header: {
-          class: Header,
+          class: Header as any, // Type assertion to bypass strict type checking
           shortcut: "CMD+SHIFT+H",
           config: {
             placeholder: "Enter a Header",
           },
         },
         list: {
-          class: List,
+          class: List as any,
           inlineToolbar: true,
           config: {
             defaultStyle: "unordered",
           },
         },
         checklist: {
-          class: Checklist,
+          class: Checklist as any,
           inlineToolbar: true,
         },
-        paragraph: Paragraph,
-        warning: Warning,
+        paragraph: Paragraph as any,
+        warning: Warning as any,
       },
-
-      holder: "editorjs",
-      data:
-        //   fileData?.document ? JSON.parse(fileData.document) :
-        rawDocument,
+      data: rawDocument,
     });
     ref.current = editor;
   };
 
   useEffect(() => {
     initEditor();
+
+    // Cleanup editor instance on component unmount
+    return () => {
+      if (ref.current) {
+        ref.current.destroy();
+        ref.current = null;
+      }
+    };
   }, []);
+
   return (
     <div>
       <div id="editorjs" className="ml-20"></div>
