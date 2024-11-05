@@ -1,19 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import EditorJS from "@editorjs/editorjs";
-import CheckList from "@editorjs/checklist";
+// @ts-ignore
+import Checklist from "@editorjs/checklist";
 import Code from "@editorjs/code";
 import Delimiter from "@editorjs/delimiter";
-import Embed from "@editorjs/embed";
-import Image from "@editorjs/image";
 import InlineCode from "@editorjs/inline-code";
 import List from "@editorjs/list";
 import Quote from "@editorjs/quote";
 import Table from "@editorjs/table";
-import SimpleImage from "@editorjs/simple-image";
+// @ts-ignore
 import Paragraph from "@editorjs/paragraph";
 import Header from "@editorjs/header";
 
-const EDITOR_TOOLS = {
+const EDITOR_TOOLS: { [toolName: string]: any } = {
   code: Code,
   header: {
     class: Header,
@@ -27,10 +26,9 @@ const EDITOR_TOOLS = {
   },
   paragraph: {
     class: Paragraph,
-    // shortcut: 'CMD+P',
     inlineToolbar: true,
   },
-  checklist: CheckList,
+  checklist: Checklist,
   inlineCode: InlineCode,
   table: Table,
   list: {
@@ -59,12 +57,12 @@ function Editor({
         holder: holder,
         placeholder: "Start writting here..",
         tools: EDITOR_TOOLS,
-        data,
-        async onChange(api, event) {
-          const content = await api.saver.save();
-          // console.log(content, "sdfb");
-          onChange(content);
-        },
+        // data,
+        // async onChange(api, event) {
+        //   const content = await api.saver.save();
+        //   // console.log(content, "sdfb");
+        //   onChange(content);
+        // },
       });
       ref.current = editor;
     }
