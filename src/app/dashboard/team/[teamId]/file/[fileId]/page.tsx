@@ -16,6 +16,11 @@ import { useTeamId } from "@/hooks/use-team";
 import { useGetFile } from "@/features/files/api/use-get-file";
 import { useFileId } from "@/hooks/use-file";
 import { Button } from "@/components/ui/button";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 
 const Editor = dynamic(() => import("@/components/editor"), {
   ssr: false,
@@ -62,20 +67,27 @@ function File() {
             <Button>Save</Button>
           </div>
         </div>
-        <div className="flex justify-start items-center h-full w-full">
-          <div className="w-6/12 h-[95%]">
+        <ResizablePanelGroup direction="horizontal">
+          {/* <div className="flex justify-start items-center h-full w-full"> */}
+          {/* <div className="w-6/12 h-[95%]"> */}
+          <ResizablePanel minSize={20} defaultSize={40}>
             <Editor
               data={file?.document}
               onChange={() => {}}
               holder="editor-holder"
               onSaveTrigger={() => {}}
             />
-          </div>
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          {/* </div> */}
 
-          <div className="w-full h-[95%] pt-4 mr-2 mb-5 rounded-lg border-2 border-[#1C1C1C]">
+          {/* <div className="w-full h-[95%] pt-4 mr-2 mb-5 rounded-lg border-2 border-[#1C1C1C]"> */}
+          <ResizablePanel minSize={40} defaultSize={60}>
             <Excalidraw />
-          </div>
-        </div>
+          </ResizablePanel>
+          {/* </div> */}
+          {/* </div> */}
+        </ResizablePanelGroup>
       </div>
     )
   );
