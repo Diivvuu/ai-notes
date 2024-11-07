@@ -134,7 +134,13 @@ function Team() {
           </TableHeader>
           <TableBody>
             {files?.map((file, index) => (
-              <TableRow className="" onClick={() => {}}>
+              <TableRow
+                className="cursor-pointer"
+                onClick={() => {
+                  router.push(`${teamId}/file/${file._id}`);
+                }}
+                key={index}
+              >
                 <TableCell className="font-medium pl-8">{index + 1}</TableCell>
                 <TableCell className="hover:underline">{file?.name}</TableCell>
                 <TableCell>{formatRelativeDate(file._creationTime)}</TableCell>

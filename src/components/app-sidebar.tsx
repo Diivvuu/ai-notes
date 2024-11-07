@@ -24,7 +24,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "./ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronsUpDown, PlusIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { AppSidebarFooter } from "./app-sidebar-footer";
@@ -44,49 +44,33 @@ function AppSidebar() {
   const isFile = pathname.includes("file");
   const [open, setOpen] = useCreateTeamModal();
   const { data: teams, isLoading: teamsLoading } = useGetTeams();
-  const { data: files, isLoading: filesLoading } = useGetFiles({ id: teamId });
+  const [files, setFiles] = useState(null);
+
+  // Only fetch files when fileId is present
   return (
     <Sidebar variant="floating">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem className="pt-4 pl-2 ">
-            {!isFile ? (
-              <div className="flex items-center justify-between p-1 text-white bg-[#434343] rounded-md">
-                <div>Teams</div>
-                <div onClick={() => setOpen(true)}>
-                  <PlusIcon className="cursor-pointer size-4" />
-                </div>
+            <div className="flex items-center justify-between p-1 text-white bg-[#434343] rounded-md">
+              <div>Teams</div>
+              <div onClick={() => setOpen(true)}>
+                <PlusIcon className="cursor-pointer size-4" />
               </div>
-            ) : (
-              <div className="flex items-center justify-between p-1 text-white bg-[#434343] rounded-md">
-                <div>Files</div>
-              </div>
-            )}
+            </div>
           </SidebarMenuItem>
           <SidebarMenuItem className="pl-4">
-            {isFile
-              ? files?.map((file, index) => {
-                  return (
-                    <div
-                      className={`mt-2 rounded-md cursor-pointer px-2 py-1 ${fileId === file._id ? "bg-[#787878] text-white" : "bg-white"}`}
-                      key={index}
-                      onClick={() => router.push(`${file._id}`)}
-                    >
-                      {file.name}
-                    </div>
-                  );
-                })
-              : teams?.map((team, index) => {
-                  return (
-                    <div
-                      className={`mt-2 rounded-md cursor-pointer px-2 py-1 ${teamId === team._id ? "bg-[#787878] text-white" : "bg-white"}`}
-                      key={index}
-                      onClick={() => router.push(`${team._id}`)}
-                    >
-                      {team?.name}
-                    </div>
-                  );
-                })}
+            {teams?.map((team, index) => {
+              return (
+                <div
+                  className={`mt-2 rounded-md cursor-pointer px-2 py-1 ${teamId === team._id ? "bg-[#787878] text-white" : "bg-white"}`}
+                  key={index}
+                  onClick={() => router.push(`${team._id}`)}
+                >
+                  {team?.name}
+                </div>
+              );
+            })}
           </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu></SidebarMenu>
