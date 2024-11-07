@@ -40,7 +40,7 @@ function File() {
   return (
     file && (
       <div className="flex flex-col min-h-screen items-start w-full">
-        <div className="flex items-center justify-between w-full pt-8 pr-2.5">
+        <div className="flex items-center justify-between w-full pt-8 pb-4 pr-2.5">
           <div>
             <Breadcrumb>
               <BreadcrumbList>
@@ -63,9 +63,6 @@ function File() {
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-          <div>
-            <Button>Save</Button>
-          </div>
         </div>
         <ResizablePanelGroup direction="horizontal">
           {/* <div className="flex justify-start items-center h-full w-full"> */}
@@ -73,12 +70,11 @@ function File() {
           <ResizablePanel minSize={20} defaultSize={40}>
             <Editor
               data={file?.document}
-              onChange={() => {}}
               holder="editor-holder"
               onSaveTrigger={() => {}}
             />
           </ResizablePanel>
-          <ResizableHandle withHandle />
+          <ResizableHandle withHandle className="mb-8" />
           {/* </div> */}
 
           {/* <div className="w-full h-[95%] pt-4 mr-2 mb-5 rounded-lg border-2 border-[#1C1C1C]"> */}

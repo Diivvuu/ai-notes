@@ -16,16 +16,15 @@ import { Id } from "../../convex/_generated/dataModel";
 import { useRouter } from "next/navigation";
 import { useFileId } from "@/hooks/use-file";
 
-export interface FILE {
-  id: Id<"files">;
-  teamId: Id<"teams">;
-  document: string;
-  whiteboard: string;
-  name: string;
-}
+// export interface FILE {
+//   id: Id<"files">;
+//   teamId: Id<"teams">;
+//   document: string;
+//   whiteboard: string;
+//   name: string;
+// }
 interface EditorProps {
   data: string;
-  onChange: () => void;
   holder: string;
   onSaveTrigger: () => void;
 }
@@ -76,45 +75,39 @@ const rawDocument = {
   ],
   version: "2.8.1",
 };
-function Editor({ data, onChange, holder, onSaveTrigger }: EditorProps) {
+function Editor({ data, holder, onSaveTrigger }: EditorProps) {
   const ref = useRef<EditorJS>();
   const router = useRouter();
   const fileId = useFileId();
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
+  const debounceDelay = 200;
+
   const { mutate, isSuccess, isError, isPending } = useUpdateDocument();
   useEffect(() => {
-    //initialize editor if we don't have a reference
     if (!ref.current) {
       const editor = new EditorJS({
         holder: holder,
         placeholder: "Click me...",
         tools: EDITOR_TOOLS,
 
-        onReady: () => {
-          console.log("ready");
-        },
-        data: data && JSON.parse(data),
+        // onReady: () => {
+        //   console.log("ready");
+        // },
+        data: data ? JSON.parse(data) : rawDocument,
         async onChange(api, event) {
           const content = await api.saver.save();
-          mutate({ id: fileId, document: JSON.stringify(content) });
-          // onChange(content);
+          if (debounceTimeout.current) {
+            clearTimeout(debounceTimeout.current);
+          }
+          debounceTimeout.current = setTimeout(() => {
+            mutate({ id: fileId, document: JSON.stringify(content) });
+          }, debounceDelay);
         },
       });
 
-      // const getData = () => {
-      //   editor
-      //     .save()
-      //     .then((outputData) => {
-      //       console.log("Article data: ", outputData);
-      //     })
-      //     .catch((error) => {
-      //       console.log("Saving failed: ", error);
-      //     });
-      // };
-      // getData();
       ref.current = editor;
     }
 
-    //add a return function handle cleanup
     return () => {
       if (ref.current && ref.current.destroy) {
         ref.current.destroy();
