@@ -11,6 +11,24 @@ import Table from "@editorjs/table";
 // @ts-ignore
 import Paragraph from "@editorjs/paragraph";
 import Header from "@editorjs/header";
+import { useUpdateDocument } from "@/features/files/api/use-update-doc";
+import { Id } from "../../convex/_generated/dataModel";
+import { useRouter } from "next/navigation";
+import { useFileId } from "@/hooks/use-file";
+
+export interface FILE {
+  id: Id<"files">;
+  teamId: Id<"teams">;
+  document: string;
+  whiteboard: string;
+  name: string;
+}
+interface EditorProps {
+  data: string;
+  onChange: () => void;
+  holder: string;
+  onSaveTrigger: () => void;
+}
 const EDITOR_TOOLS: { [toolName: string]: any } = {
   code: Code,
   header: {
@@ -37,18 +55,32 @@ const EDITOR_TOOLS: { [toolName: string]: any } = {
   quote: Quote,
   delimiter: Delimiter,
 };
-function Editor({
-  data,
-  onChange,
-  holder,
-}: {
-  data: string;
-  onChange: () => void;
-  holder: string;
-}) {
-  //add a reference to editor
+const rawDocument = {
+  time: 1550476186479,
+  blocks: [
+    {
+      data: {
+        text: "Document Name",
+        level: 2,
+      },
+      id: "123",
+      type: "header",
+    },
+    {
+      data: {
+        level: 4,
+      },
+      id: "1234",
+      type: "header",
+    },
+  ],
+  version: "2.8.1",
+};
+function Editor({ data, onChange, holder, onSaveTrigger }: EditorProps) {
   const ref = useRef<EditorJS>();
-  //initialize editorjs
+  const router = useRouter();
+  const fileId = useFileId();
+  const { mutate, isSuccess, isError, isPending } = useUpdateDocument();
   useEffect(() => {
     //initialize editor if we don't have a reference
     if (!ref.current) {
@@ -56,13 +88,29 @@ function Editor({
         holder: holder,
         placeholder: "Click me...",
         tools: EDITOR_TOOLS,
-        // data,
-        // async onChange(api, event) {
-        //   const content = await api.saver.save();
-        //   // console.log(content, "sdfb");
-        //   onChange(content);
-        // },
+
+        onReady: () => {
+          console.log("ready");
+        },
+        data: data && JSON.parse(data),
+        async onChange(api, event) {
+          const content = await api.saver.save();
+          mutate({ id: fileId, document: JSON.stringify(content) });
+          // onChange(content);
+        },
       });
+
+      // const getData = () => {
+      //   editor
+      //     .save()
+      //     .then((outputData) => {
+      //       console.log("Article data: ", outputData);
+      //     })
+      //     .catch((error) => {
+      //       console.log("Saving failed: ", error);
+      //     });
+      // };
+      // getData();
       ref.current = editor;
     }
 

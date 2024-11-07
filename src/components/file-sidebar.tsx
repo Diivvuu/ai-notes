@@ -35,13 +35,13 @@ import { useTeamId } from "@/hooks/use-team";
 import { useGetFiles } from "@/features/files/api/use-get-files";
 import { useFileId } from "@/hooks/use-file";
 
-function AppSidebar() {
+function FileSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const teamId = useTeamId();
   const fileId = useFileId();
   const [open, setOpen] = useCreateTeamModal();
-  const { data: teams, isLoading: teamsLoading } = useGetTeams();
+  const { data: files, isLoading: filesLoading } = useGetFiles({ id: teamId });
 
   return (
     <Sidebar variant="floating">
@@ -49,21 +49,21 @@ function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem className="pt-4 pl-2 ">
             <div className="flex items-center justify-between p-1 text-white bg-[#434343] rounded-md">
-              <div>Teams</div>
+              <div>Files</div>
               <div onClick={() => setOpen(true)}>
                 <PlusIcon className="cursor-pointer size-4" />
               </div>
             </div>
           </SidebarMenuItem>
           <SidebarMenuItem className="pl-4">
-            {teams?.map((team, index) => {
+            {files?.map((file, index) => {
               return (
                 <div
-                  className={`mt-2 rounded-md cursor-pointer px-2 py-1 ${teamId === team._id ? "bg-[#787878] text-white" : "bg-white"}`}
+                  className={`mt-2 rounded-md cursor-pointer px-2 py-1 ${fileId === file._id ? "bg-[#787878] text-white" : "bg-white"}`}
                   key={index}
-                  onClick={() => router.push(`${team._id}`)}
+                  onClick={() => router.push(`${file._id}`)}
                 >
-                  {team?.name}
+                  {file?.name}
                 </div>
               );
             })}
@@ -82,4 +82,4 @@ function AppSidebar() {
   );
 }
 
-export default AppSidebar;
+export default FileSidebar;

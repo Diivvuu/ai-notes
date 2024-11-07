@@ -93,7 +93,7 @@ function Team() {
       <div className="w-full md:mx-12 lg:mx-40  min-h-screen">
         <TeamHeader setOpen={setOpen} name={currentTeam?.name} />
 
-        <div className="w-full flex flex-col items-center justify-center gap-y-4 mt-20">
+        <div className="w-full flex flex-col items-center justify-center gap-y-4 mt-40">
           <AlertTriangleIcon className="size-8" />
           <div>
             Currently you don't have any files{" "}
@@ -111,7 +111,7 @@ function Team() {
   return (
     <div className="w-full md:mx-12 lg:mx-20">
       <TeamHeader setOpen={setOpen} name={currentTeam?.name} />
-      <div className="w-full flex flex-col items-center justify-start mt-20">
+      <div className="w-full flex flex-col items-center justify-start mt-12">
         <Table className="w-full">
           <TableCaption>List of your teams</TableCaption>
           <TableHeader>

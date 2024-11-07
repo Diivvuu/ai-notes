@@ -33,7 +33,7 @@ export const create = mutation({
       teamId,
       role: "admin",
     });
-
+    
     return teamId;
   },
 });

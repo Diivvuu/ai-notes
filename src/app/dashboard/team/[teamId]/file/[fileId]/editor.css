@@ -4,7 +4,8 @@
   word-break: break-word;
   overflow: hidden;
   width: 100%;
-  height: calc(100vh - 2rem);
+  height: calc(100vh - 7rem);
+  margin-bottom: 2rem;
   overflow-y: scroll;
-  padding: 2rem;
+  padding: 0 2rem 2rem 2rem;
 }

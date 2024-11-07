@@ -31,6 +31,34 @@ export const create = mutation({
   },
 });
 
+export const updateDocument = mutation({
+  args: {
+    id: v.id("files"),
+    document: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+
+    const file = await ctx.db.get(args.id);
+    if (!file) throw new Error("File not found");
+
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_team_id_user_id", (q) =>
+        q.eq("teamId", file.teamId).eq("userId", userId)
+      )
+      .unique();
+
+    if (!member || member.role !== "admin")
+      throw new Error("User is not authorized");
+
+    const result = await ctx.db.patch(args.id, { document: args.document });
+    return result;
+  },
+});
+
+
 export const getById = query({
   args: {
     id: v.id("files"),
