@@ -7,6 +7,7 @@ interface UseGetFileProps {
 }
 
 export const useGetFiles = ({ id }: UseGetFileProps) => {
+  console.log("called");
   const data = useQuery(api.files.get, { id });
   const isLoading = data === undefined;
 

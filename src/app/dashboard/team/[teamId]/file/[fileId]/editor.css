@@ -1,0 +1,10 @@
+#editor-holder {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow: hidden;
+  width: 100%;
+  height: calc(100vh - 2rem);
+  overflow-y: scroll;
+  padding: 2rem;
+}

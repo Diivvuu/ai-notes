@@ -11,7 +11,6 @@ import Table from "@editorjs/table";
 // @ts-ignore
 import Paragraph from "@editorjs/paragraph";
 import Header from "@editorjs/header";
-
 const EDITOR_TOOLS: { [toolName: string]: any } = {
   code: Code,
   header: {
@@ -55,7 +54,7 @@ function Editor({
     if (!ref.current) {
       const editor = new EditorJS({
         holder: holder,
-        placeholder: "Start writting here..",
+        placeholder: "Click me...",
         tools: EDITOR_TOOLS,
         // data,
         // async onChange(api, event) {
@@ -77,15 +76,7 @@ function Editor({
 
   return (
     <>
-      <div
-        id={holder}
-        style={{
-          width: "100%",
-          minHeight: 500,
-          borderRadius: " 7px",
-          background: "fff",
-        }}
-      />
+      <div id={holder} />
     </>
   );
 }

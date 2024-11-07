@@ -9,7 +9,7 @@ import {
 const ExcalidrawWrapper: React.FC = () => {
   //   console.info(convertToExcalidrawElements([]));
   return (
-    <div style={{ height: "500px", width: "500px" }}>
+    <div style={{ height: "100%", width: "100%" }}>
       <Excalidraw>
         {" "}
         <MainMenu>
