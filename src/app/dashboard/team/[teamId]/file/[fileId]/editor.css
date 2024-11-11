@@ -9,3 +9,12 @@
   overflow-y: scroll;
   padding: 0 2rem 2rem 2rem;
 }
+.save-reminder {
+  opacity: 1;
+  transition: opacity 0.5s ease, filter 0.5s ease;
+}
+
+.save-reminder.hide {
+  opacity: 0;
+  filter: blur(4px);
+}
