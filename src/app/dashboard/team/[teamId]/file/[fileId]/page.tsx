@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 import "./editor.css";
 import {
   Breadcrumb,
-  BreadcrumbEllipsis,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
@@ -22,10 +21,8 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { useCreateContentModal } from "@/store/use-create-content-modal";
-
-const Editor = dynamic(() => import("@/components/editor"), {
-  ssr: false,
-});
+import Editor from "@/components/editor";
+import { Loader } from "lucide-react";
 const Excalidraw = dynamic(() => import("@/components/canvas"), {
   ssr: false,
 });
@@ -35,12 +32,24 @@ function File() {
   const teamId = useTeamId();
   const fileId = useFileId();
 
-  const [open, setOpen] = useCreateContentModal();
+  const [modalState, setModalState] = useCreateContentModal();
   const [showSaveReminder, setShowSaveReminder] = useState(false);
   const [hideReminder, setHideReminder] = useState(false);
   const [triggerSave, setTriggerSave] = useState(false);
+  const [modalClosed, setModalClosed] = useState(false);
 
-  const { data: file, isLoading: fileLoading } = useGetFile({ id: fileId });
+  const { data: file, isLoading: fileLoading } = useGetFile({
+    id: fileId,
+  });
+
+  const [forceRender, setForceRender] = useState(0);
+
+  useEffect(() => {
+    if (modalClosed && file) {
+      setModalClosed(false);
+      setForceRender((prev) => prev + 1);
+    }
+  }, [modalClosed, file]);
 
   useEffect(() => {
     const showTimeout = setTimeout(() => {
@@ -55,6 +64,7 @@ function File() {
 
     return () => clearTimeout(showTimeout);
   }, []);
+
   const handleSaveWhiteboard = (content: string) => {};
 
   return (
@@ -85,7 +95,16 @@ function File() {
               </Breadcrumb>
 
               <div>
-                <Button onClick={() => setOpen(true)}>
+                <Button
+                  onClick={() =>
+                    setModalState({
+                      isOpen: true,
+                      onClose: () => {
+                        setModalClosed(true); 
+                      },
+                    })
+                  }
+                >
                   Create content with AI
                 </Button>
               </div>
@@ -106,11 +125,17 @@ function File() {
         </div>
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel minSize={20} defaultSize={40}>
-            <Editor
-              data={file?.document}
-              holder="editor-holder"
-              onSaveTrigger={() => {}}
-            />
+            {fileLoading ? (
+              <Loader className="size-8 animate-sp" />
+            ) : (
+              <Editor
+                key={forceRender} // Ensure the Editor is re-rendered by changing the key
+                data={file?.document}
+                holder="editor-holder"
+                isSaveTriggered={false}
+                onSaveTrigger={() => {}}
+              />
+            )}
           </ResizablePanel>
           <ResizableHandle withHandle className="mb-8" />
           <ResizablePanel

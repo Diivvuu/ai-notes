@@ -24,9 +24,11 @@ import { useFileId } from "@/hooks/use-file";
 //   name: string;
 // }
 interface EditorProps {
+  key: number;
   data: string;
   holder: string;
-  onSaveTrigger: () => void;
+  isSaveTriggered: boolean;
+  onSaveTrigger: (content: any) => void;
 }
 const EDITOR_TOOLS: { [toolName: string]: any } = {
   code: Code,
@@ -75,7 +77,13 @@ const rawDocument = {
   ],
   version: "2.8.1",
 };
-function Editor({ data, holder, onSaveTrigger }: EditorProps) {
+function Editor({
+  data,
+  holder,
+  isSaveTriggered,
+  onSaveTrigger,
+  key,
+}: EditorProps) {
   const ref = useRef<EditorJS>();
   const router = useRouter();
   const fileId = useFileId();
@@ -83,6 +91,7 @@ function Editor({ data, holder, onSaveTrigger }: EditorProps) {
   const debounceDelay = 200;
 
   const { mutate, isSuccess, isError, isPending } = useUpdateDocument();
+
   useEffect(() => {
     if (!ref.current) {
       const editor = new EditorJS({
@@ -104,7 +113,7 @@ function Editor({ data, holder, onSaveTrigger }: EditorProps) {
           }, debounceDelay);
         },
       });
-
+      console.log(data);
       ref.current = editor;
     }
 
@@ -113,7 +122,30 @@ function Editor({ data, holder, onSaveTrigger }: EditorProps) {
         ref.current.destroy();
       }
     };
-  }, []);
+  }, [key]);
+  useEffect(() => {
+    console.log("isSaveTriggered:", isSaveTriggered); // Log the value of isSaveTriggered
+
+    if (isSaveTriggered && ref.current) {
+      const saveCurrentContent = async () => {
+        if (ref.current) {
+          try {
+            const content = await ref.current.save(); // Get the current content
+            console.log("Saving content:", content); // Log content to ensure it's being fetched
+
+            // Send content back to parent component via onSaveTrigger
+            onSaveTrigger(content); // Pass content to the parent component
+          } catch (error) {
+            console.error("Error saving content:", error);
+          }
+        } else {
+          console.log("Editor instance not available.");
+        }
+      };
+
+      saveCurrentContent(); // Call the save function
+    }
+  }, [isSaveTriggered, onSaveTrigger]); // Trigger this effect when isSaveTriggered changes
 
   return (
     <>

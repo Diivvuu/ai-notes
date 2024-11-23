@@ -1,7 +1,8 @@
 import { atom, useAtom } from "jotai";
 
-const createContentModalAtom = atom(false);
+const createContentModalAtom = atom({
+  isOpen: false,
+  onClose: () => {},
+});
 
-export const useCreateContentModal = () => {
-  return useAtom(createContentModalAtom);
-};
+export const useCreateContentModal = () => useAtom(createContentModalAtom);

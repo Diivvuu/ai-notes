@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -26,18 +27,31 @@ import { Button } from "./ui/button";
 import { useCreateContentModal } from "@/store/use-create-content-modal";
 import { AI_PROMPT } from "@/constants/options";
 import { chatSession } from "@/service/ai-model";
+import dynamic from "next/dynamic";
+import { useUpdateDocument } from "@/features/files/api/use-update-doc";
+import { useFileId } from "@/hooks/use-file";
+import { toast } from "sonner";
+import { useGetFile } from "@/features/files/api/use-get-file";
+
+const Editor = dynamic(() => import("@/components/editor"), {
+  ssr: false,
+});
 
 function CreateContentModal() {
-  // const fileId = useFileId();
-  const [open, setOpen] = useCreateContentModal();
+  const fileId = useFileId();
+  const [modalState, setModalState] = useCreateContentModal();
+  const { isOpen, onClose } = modalState;
+  const [response, setResponse] = useState("");
   // const { data: file, isLoading: fileLoading } = useGetFile({ id: fileId });
-
+  const { mutate, isPending, isSuccess } = useUpdateDocument();
+  const [isSaveTriggered, setIsSaveTriggered] = useState(false);
   const [topic, setTopic] = useState<string>("");
   const [style, setStyle] = useState<string>("brief");
   const [generatedContent, setGeneratedContent] = useState<string>("");
 
   const handleClose = () => {
-    setOpen(false);
+    if (onClose) onClose();
+    setModalState({ ...modalState, isOpen: false });
   };
 
   const FINAL_PROMPT = AI_PROMPT.replace("{topic}", topic).replace(
@@ -47,11 +61,31 @@ function CreateContentModal() {
   const onGenerateTrip = async () => {
     const result = await chatSession.sendMessage(FINAL_PROMPT);
     console.log("result", result?.response?.text());
+    setResponse(result?.response?.text());
     console.log(process.env.NEXT_PUBLIC_GOOGLE_GEMINI_API_KEY);
   };
 
-  return (
-    <Dialog open={open} onOpenChange={handleClose}>
+  const handleSaveDocument = async (content: any) => {
+    if (content) console.log("content is", content);
+    mutate(
+      { id: fileId, document: JSON.stringify(content) },
+      {
+        onSuccess(Id) {
+          console.log("onSuccess triggered");
+          setIsSaveTriggered(false);
+          handleClose();
+        },
+        onError(error) {
+          toast.error("Failed to update content.");
+        },
+      }
+    );
+  };
+  const handleAddContent = () => {
+    setIsSaveTriggered(true);
+  };
+  return response === "" ? (
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="w-full">
         <DialogHeader>
           <DialogTitle>Create content from AI</DialogTitle>
@@ -104,16 +138,34 @@ function CreateContentModal() {
                 </div>
               )}
             </form>
-
-            {/* Display the generated content */}
           </CardContent>
           <CardFooter className="flex justify-between">
             <Button variant="outline" onClick={handleClose}>
               Cancel
             </Button>
-            <Button onClick={onGenerateTrip}>Deploy</Button>
+            <Button onClick={onGenerateTrip}>Create content</Button>
           </CardFooter>
         </Card>
+      </DialogContent>
+    </Dialog>
+  ) : (
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="w-full h-full">
+        <DialogHeader>
+          <DialogTitle>What content do you want to add?</DialogTitle>
+        </DialogHeader>
+        <div className="w-full max-h-screen">
+          <Editor
+            key={0}
+            data={response}
+            holder="editor-holder1"
+            isSaveTriggered={isSaveTriggered}
+            onSaveTrigger={handleSaveDocument}
+          />
+          <div className="flex justify-end">
+            <Button onClick={handleAddContent}>Add content</Button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );

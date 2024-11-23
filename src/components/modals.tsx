@@ -12,8 +12,6 @@ export const Modals = () => {
   if (!mounted) return null;
   return (
     <>
-      {/* <CreateChannelModal /> */}
-      {/* <CreateWorkSpaceModal /> */}
       <CreateContentModal />
       <CreateFileModal />
       <CreateTeamModal />
