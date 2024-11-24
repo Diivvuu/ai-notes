@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
-import { ChevronsUpDown, PlusIcon } from "lucide-react";
+import { ChevronsUpDown, Pencil, PlusIcon, Trash } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { AppSidebarFooter } from "./app-sidebar-footer";
 import { useCreateTeamModal } from "@/store/use-create-team-modal";
@@ -59,11 +59,19 @@ function AppSidebar() {
             {teams?.map((team, index) => {
               return (
                 <div
-                  className={`mt-2 rounded-md cursor-pointer px-2 py-1 ${teamId === team._id ? "bg-[#787878] text-white" : "bg-white"}`}
+                  className={`flex justify-between items-center mt-2 rounded-md cursor-pointer px-2 py-1 ${teamId === team._id ? "bg-[#787878] text-white" : "bg-white"}`}
                   key={index}
                   onClick={() => router.push(`${team._id}`)}
                 >
                   {team?.name}
+                  <div className="flex items-center gap-2">
+                    <Pencil
+                      className={`size-3.5 ${teamId === team._id ? " text-white" : "text-black"} hover:scale-110 transition-all ease duration-100`}
+                    />
+                    <Trash
+                      className={`size-3.5 ${teamId === team._id ? " text-white" : "text-black"} hover:scale-110 transition-all ease duration-100`}
+                    />
+                  </div>
                 </div>
               );
             })}

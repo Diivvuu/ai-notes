@@ -32,6 +32,7 @@ import { useUpdateDocument } from "@/features/files/api/use-update-doc";
 import { useFileId } from "@/hooks/use-file";
 import { toast } from "sonner";
 import { useGetFile } from "@/features/files/api/use-get-file";
+import { Loader } from "lucide-react";
 
 const Editor = dynamic(() => import("@/components/editor"), {
   ssr: false,
@@ -42,7 +43,7 @@ function CreateContentModal() {
   const [modalState, setModalState] = useCreateContentModal();
   const { isOpen, onClose } = modalState;
   const [response, setResponse] = useState("");
-  // const { data: file, isLoading: fileLoading } = useGetFile({ id: fileId });
+  const [loading, setLoading] = useState(false); // Loading state
   const { mutate, isPending, isSuccess } = useUpdateDocument();
   const [isSaveTriggered, setIsSaveTriggered] = useState(false);
   const [topic, setTopic] = useState<string>("");
@@ -58,11 +59,18 @@ function CreateContentModal() {
     "{style}",
     style
   );
+
   const onGenerateTrip = async () => {
-    const result = await chatSession.sendMessage(FINAL_PROMPT);
-    console.log("result", result?.response?.text());
-    setResponse(result?.response?.text());
-    console.log(process.env.NEXT_PUBLIC_GOOGLE_GEMINI_API_KEY);
+    setLoading(true); // Start loading
+    try {
+      const result = await chatSession.sendMessage(FINAL_PROMPT);
+      setResponse(result?.response?.text());
+    } catch (error) {
+      console.error("Error generating content", error);
+      toast.error("Failed to generate content.");
+    } finally {
+      setLoading(false); // Stop loading
+    }
   };
 
   const handleSaveDocument = async (content: any) => {
@@ -81,71 +89,81 @@ function CreateContentModal() {
       }
     );
   };
+
   const handleAddContent = () => {
     setIsSaveTriggered(true);
   };
+
   return response === "" ? (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="w-full">
         <DialogHeader>
           <DialogTitle>Create content from AI</DialogTitle>
         </DialogHeader>
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>Create content for file</CardTitle>
-            <CardDescription>Get notes in one click</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form>
-              <div className="grid w-full items-center gap-4">
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="name">What's the topic & main focus</Label>
-                  <Input
-                    id="name"
-                    value={topic}
-                    onChange={(e) => setTopic(e.target.value)}
-                    placeholder="e.g. travel plan, art history, business"
-                  />
+        {loading ? (
+          <Loader className="animate-spin size-12 mx-auto my-32" />
+        ) : (
+          <Card className="w-full">
+            <CardHeader>
+              <CardTitle>Create content for file</CardTitle>
+              <CardDescription>Get notes in one click</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form>
+                <div className="grid w-full items-center gap-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="name">What's the topic & main focus</Label>
+                    <Input
+                      id="name"
+                      value={topic}
+                      onChange={(e) => setTopic(e.target.value)}
+                      placeholder="e.g. travel plan, art history, business"
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="framework">
+                      What style and depth do you want?
+                    </Label>
+                    <Select
+                      value={style}
+                      onValueChange={(value) => setStyle(value)}
+                    >
+                      <SelectTrigger id="framework">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent position="popper">
+                        <SelectItem value="brief">Brief Overview</SelectItem>
+                        <SelectItem value="detailed">
+                          Detailed Breakdown
+                        </SelectItem>
+                        <SelectItem value="professional">
+                          Professional
+                        </SelectItem>
+                        <SelectItem value="casual">Casual Tone</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="framework">
-                    What style and depth do you want?
-                  </Label>
-                  <Select
-                    value={style}
-                    onValueChange={(value) => setStyle(value)}
-                  >
-                    <SelectTrigger id="framework">
-                      <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent position="popper">
-                      <SelectItem value="brief">Brief Overview</SelectItem>
-                      <SelectItem value="detailed">
-                        Detailed Breakdown
-                      </SelectItem>
-                      <SelectItem value="professional">Professional</SelectItem>
-                      <SelectItem value="casual">Casual Tone</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              {generatedContent && (
-                <div className="mt-4">
-                  <h3>Generated Content:</h3>
-                  <pre className="bg-gray-100 p-4 rounded">
-                    {generatedContent}
-                  </pre>
-                </div>
-              )}
-            </form>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button variant="outline" onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button onClick={onGenerateTrip}>Create content</Button>
-          </CardFooter>
-        </Card>
+                {generatedContent && (
+                  <div className="mt-4">
+                    <h3>Generated Content:</h3>
+                    <pre className="bg-gray-100 p-4 rounded">
+                      {generatedContent}
+                    </pre>
+                  </div>
+                )}
+              </form>
+            </CardContent>
+            <CardFooter className="flex justify-between">
+              <Button variant="outline" onClick={handleClose}>
+                Cancel
+              </Button>
+              <Button onClick={onGenerateTrip} disabled={loading}>
+                Create content
+              </Button>
+            </CardFooter>
+          </Card>
+        )}
       </DialogContent>
     </Dialog>
   ) : (
