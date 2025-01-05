@@ -9,38 +9,20 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useCurrentUser } from "@/features/auth/api/use-current-user";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "./ui/button";
-import { useEffect, useState } from "react";
-import { ChevronsUpDown, PlusIcon } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { PlusIcon } from "lucide-react";
 import { AppSidebarFooter } from "./app-sidebar-footer";
-import { useCreateTeamModal } from "@/store/use-create-team-modal";
-import { useGetTeams } from "@/features/teams/api/use-get-teams";
 import { usePathname, useRouter } from "next/navigation";
 import { useTeamId } from "@/hooks/use-team";
 import { useGetFiles } from "@/features/files/api/use-get-files";
 import { useFileId } from "@/hooks/use-file";
+import { useCreateFileModal } from "@/store/use-create-file-modal";
 
 function FileSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const teamId = useTeamId();
   const fileId = useFileId();
-  const [open, setOpen] = useCreateTeamModal();
+  const [open, setOpen] = useCreateFileModal();
   const { data: files, isLoading: filesLoading } = useGetFiles({ id: teamId });
 
   return (

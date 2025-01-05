@@ -36,7 +36,6 @@ export default function RootLayout({
         >
           <ConvexClientProvider>
             {children}
-            <Modals />
           </ConvexClientProvider>
         </body>
       </html>

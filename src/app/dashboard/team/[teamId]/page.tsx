@@ -18,6 +18,7 @@ import {
   Calendar,
   File,
   Link,
+  Loader,
   Share,
   Tag,
 } from "lucide-react";
@@ -88,6 +89,14 @@ function Team() {
     return `${yearsDifference} years ago`;
   };
 
+  if (filesLoading) {
+    return (
+      // <div>
+      <Loader className="animate-spin size-20 m-auto" />
+      // </div>
+    );
+  }
+
   if (files?.length === 0)
     return (
       <div className="w-full md:mx-12 lg:mx-40  min-h-screen">
@@ -145,7 +154,12 @@ function Team() {
                 <TableCell className="hover:underline">{file?.name}</TableCell>
                 <TableCell>{formatRelativeDate(file._creationTime)}</TableCell>
                 <TableCell>{"images + then popup"}</TableCell>
-                <TableCell>
+                <TableCell
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // setOpenJoinCode(true);
+                  }}
+                >
                   <Link className="size-4" />
                 </TableCell>
               </TableRow>

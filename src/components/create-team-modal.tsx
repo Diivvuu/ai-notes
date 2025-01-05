@@ -41,6 +41,7 @@ export const CreateTeamModal = () => {
 
   const handleClose = () => {
     setOpen(false);
+    setName("");
   };
 
   return (

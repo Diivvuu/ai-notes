@@ -3,13 +3,46 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
 const generateCode = () => {
-  const code = Array.from(
+  const randomPart = Array.from(
     { length: 6 },
     () => "0123456789abcdefghijklmnopqrstuvxyz"[Math.floor(Math.random() * 36)]
   ).join("");
 
-  return code;
+  const timestampPart = Date.now().toString(36);
+
+  return `${randomPart}-${timestampPart}`;
 };
+
+export const regenerateJoinCode = mutation({
+  args: {
+    teamId: v.id("teams"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("User is not authorized");
+
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_team_id_user_id", (q) =>
+        q.eq("teamId", args.teamId).eq("userId", userId)
+      )
+      .unique();
+
+    //user is admin?
+    if (!member || member.role !== "admin") {
+      throw new Error("User is not authorized");
+    }
+
+    const newJoinCode = generateCode();
+
+    //added in team info
+    await ctx.db.patch(args.teamId, {
+      joinCode: newJoinCode,
+    });
+
+    return newJoinCode;
+  },
+});
 
 export const create = mutation({
   args: {
@@ -38,7 +71,7 @@ export const create = mutation({
   },
 });
 
-const update = mutation({
+export const update = mutation({
   args: {
     id: v.id("teams"),
     name: v.string(),

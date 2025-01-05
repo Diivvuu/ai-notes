@@ -22,6 +22,7 @@ const schema = defineSchema({
     teamId: v.id("teams"),
     whiteboard: v.string(),
     document: v.string(),
+    joinCode : v.string(),
   }).index("by_team_id", ["teamId"]),
 });
 

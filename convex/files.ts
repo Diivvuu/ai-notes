@@ -2,6 +2,15 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
+const generateCode = () => {
+  const code = Array.from(
+    { length: 6 },
+    () => "0123456789abcdefghijklmnopqrstuvxyz"[Math.floor(Math.random() * 36)]
+  ).join("");
+
+  return code;
+};
+
 export const create = mutation({
   args: {
     name: v.string(),
@@ -21,11 +30,14 @@ export const create = mutation({
     if (!member || member.role !== "admin")
       throw new Error("User is not authorized");
 
+    const joinCode = generateCode();
+
     const fileId = await ctx.db.insert("files", {
       name: args.name,
       teamId: args.teamId,
       whiteboard: "",
       document: "",
+      joinCode,
     });
     return fileId;
   },

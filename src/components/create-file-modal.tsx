@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-// import { useCreateWorkspace } from "../api/use-create-workspaces";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useCreateFileModal } from "@/store/use-create-file-modal";
@@ -34,7 +33,8 @@ export const CreateFileModal = () => {
       {
         onSuccess(Id) {
           toast.success("New file created!");
-          router.push(`${teamId}/file/${Id}`);
+          router.push(`/dashboard/team/${teamId}/file/${Id}`);
+          console.log("opening");
           handleClose();
         },
       }
@@ -43,6 +43,7 @@ export const CreateFileModal = () => {
 
   const handleClose = () => {
     setOpen(false);
+    setName("");
   };
 
   return (
